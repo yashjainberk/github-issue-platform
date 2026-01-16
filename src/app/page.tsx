@@ -17,9 +17,10 @@ const DEFAULT_FILTERS: IssueFilters = {
 };
 
 export default function Dashboard() {
-  const [owner, setOwner] = useState("facebook");
-  const [repo, setRepo] = useState("react");
-  const [token, setToken] = useState("");
+    const [owner, setOwner] = useState("facebook");
+    const [repo, setRepo] = useState("react");
+    const [token, setToken] = useState("");
+    const [devinApiKey, setDevinApiKey] = useState("");
   const [issues, setIssues] = useState<GitHubIssue[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -59,11 +60,12 @@ export default function Dashboard() {
     fetchIssues();
   }, [fetchIssues]);
 
-  const handleConfigChange = (newOwner: string, newRepo: string, newToken: string) => {
-    setOwner(newOwner);
-    setRepo(newRepo);
-    setToken(newToken);
-  };
+    const handleConfigChange = (newOwner: string, newRepo: string, newToken: string, newDevinApiKey: string) => {
+      setOwner(newOwner);
+      setRepo(newRepo);
+      setToken(newToken);
+      setDevinApiKey(newDevinApiKey);
+    };
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -103,12 +105,13 @@ export default function Dashboard() {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <RepoConfig
-          owner={owner}
-          repo={repo}
-          token={token}
-          onConfigChange={handleConfigChange}
-        />
+                <RepoConfig
+                  owner={owner}
+                  repo={repo}
+                  token={token}
+                  devinApiKey={devinApiKey}
+                  onConfigChange={handleConfigChange}
+                />
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
@@ -141,12 +144,15 @@ export default function Dashboard() {
         />
       </main>
 
-      {selectedIssue && (
-        <IssueDetail
-          issue={selectedIssue}
-          onClose={() => setSelectedIssue(null)}
-        />
-      )}
+            {selectedIssue && (
+              <IssueDetail
+                issue={selectedIssue}
+                onClose={() => setSelectedIssue(null)}
+                repoOwner={owner}
+                repoName={repo}
+                devinApiKey={devinApiKey}
+              />
+            )}
     </div>
   );
 }

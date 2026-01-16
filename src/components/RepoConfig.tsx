@@ -6,23 +6,26 @@ interface RepoConfigProps {
   owner: string;
   repo: string;
   token: string;
-  onConfigChange: (owner: string, repo: string, token: string) => void;
+  devinApiKey: string;
+  onConfigChange: (owner: string, repo: string, token: string, devinApiKey: string) => void;
 }
 
 export function RepoConfig({
   owner,
   repo,
   token,
+  devinApiKey,
   onConfigChange,
 }: RepoConfigProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [localOwner, setLocalOwner] = useState(owner);
   const [localRepo, setLocalRepo] = useState(repo);
   const [localToken, setLocalToken] = useState(token);
+  const [localDevinApiKey, setLocalDevinApiKey] = useState(devinApiKey);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onConfigChange(localOwner, localRepo, localToken);
+    onConfigChange(localOwner, localRepo, localToken, localDevinApiKey);
     setIsExpanded(false);
   };
 
@@ -56,10 +59,11 @@ export function RepoConfig({
             <p className="font-medium text-gray-900 dark:text-white">
               Repository Configuration
             </p>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              {owner}/{repo}
-              {token ? " (authenticated)" : " (public access)"}
-            </p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                          {owner}/{repo}
+                          {token ? " (GitHub authenticated)" : " (public access)"}
+                          {devinApiKey ? " | Devin enabled" : ""}
+                        </p>
           </div>
         </div>
         <svg
@@ -118,20 +122,36 @@ export function RepoConfig({
               placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
-            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-              A token increases rate limits and allows access to private repositories.
-              Create one at{" "}
-              <a
-                href="https://github.com/settings/tokens"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-500 hover:underline"
-              >
-                GitHub Settings
-              </a>
-            </p>
-          </div>
-          <div className="flex justify-end gap-2">
+                      <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                        A token increases rate limits and allows access to private repositories.
+                        Create one at{" "}
+                        <a
+                          href="https://github.com/settings/tokens"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-500 hover:underline"
+                        >
+                          GitHub Settings
+                        </a>
+                      </p>
+                    </div>
+                    <div className="mb-4">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Devin API Key (optional)
+                      </label>
+                      <input
+                        type="password"
+                        value={localDevinApiKey}
+                        onChange={(e) => setLocalDevinApiKey(e.target.value)}
+                        placeholder="your_devin_api_key"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                      <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                        Required for Devin integration features (scoping and fixing issues).
+                        Get your API key from the Devin dashboard.
+                      </p>
+                    </div>
+                    <div className="flex justify-end gap-2">
             <button
               type="button"
               onClick={() => setIsExpanded(false)}
