@@ -1,10 +1,14 @@
 "use client";
 
 import { GitHubIssue } from "@/types/github";
+import { DevinActions } from "./DevinActions";
 
 interface IssueDetailProps {
   issue: GitHubIssue;
   onClose: () => void;
+  repoOwner: string;
+  repoName: string;
+  devinApiKey: string;
 }
 
 function formatDate(dateString: string): string {
@@ -18,7 +22,7 @@ function formatDate(dateString: string): string {
   });
 }
 
-export function IssueDetail({ issue, onClose }: IssueDetailProps) {
+export function IssueDetail({ issue, onClose, repoOwner, repoName, devinApiKey }: IssueDetailProps) {
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-hidden flex flex-col">
@@ -142,21 +146,28 @@ export function IssueDetail({ issue, onClose }: IssueDetailProps) {
             )}
           </div>
 
-          <div className="prose dark:prose-invert max-w-none">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
-              Description
-            </h3>
-            {issue.body ? (
-              <div className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg">
-                {issue.body}
-              </div>
-            ) : (
-              <p className="text-gray-400 dark:text-gray-500 italic">
-                No description provided
-              </p>
-            )}
-          </div>
-        </div>
+                  <div className="prose dark:prose-invert max-w-none">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
+                      Description
+                    </h3>
+                    {issue.body ? (
+                      <div className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg">
+                        {issue.body}
+                      </div>
+                    ) : (
+                      <p className="text-gray-400 dark:text-gray-500 italic">
+                        No description provided
+                      </p>
+                    )}
+                  </div>
+
+                  <DevinActions
+                    issue={issue}
+                    repoOwner={repoOwner}
+                    repoName={repoName}
+                    devinApiKey={devinApiKey}
+                  />
+                </div>
 
         <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-between items-center">
           <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
