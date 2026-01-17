@@ -1,6 +1,9 @@
 "use client";
 
+import { MessageSquare } from "lucide-react";
 import { GitHubIssue } from "@/types/github";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 interface IssueCardProps {
   issue: GitHubIssue;
@@ -16,78 +19,62 @@ function formatDate(dateString: string): string {
   });
 }
 
-function getStateColor(state: string, stateReason: string | null): string {
+function getStateBadgeVariant(state: string, stateReason: string | null): "success" | "purple" | "secondary" {
   if (state === "closed") {
     if (stateReason === "completed") {
-      return "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200";
+      return "purple";
     }
-    return "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200";
+    return "secondary";
   }
-  return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200";
+  return "success";
 }
 
 export function IssueCard({ issue, onClick }: IssueCardProps) {
   return (
-    <div
-      className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer bg-white dark:bg-gray-800"
+    <Card
+      className="p-4 hover:shadow-md transition-shadow cursor-pointer bg-card"
       onClick={() => onClick?.(issue)}
     >
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-2">
-            <span
-              className={`px-2 py-0.5 text-xs font-medium rounded-full ${getStateColor(
-                issue.state,
-                issue.state_reason
-              )}`}
-            >
+            <Badge variant={getStateBadgeVariant(issue.state, issue.state_reason)}>
               {issue.state}
-            </span>
-            <span className="text-gray-500 dark:text-gray-400 text-sm">
+            </Badge>
+            <span className="text-muted-foreground text-sm">
               #{issue.number}
             </span>
           </div>
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 truncate">
+          <h3 className="text-lg font-semibold text-foreground mb-2 truncate">
             {issue.title}
           </h3>
           {issue.body && (
-            <p className="text-gray-600 dark:text-gray-300 text-sm line-clamp-2 mb-3">
+            <p className="text-muted-foreground text-sm line-clamp-2 mb-3">
               {issue.body}
             </p>
           )}
           <div className="flex flex-wrap gap-2 mb-3">
             {issue.labels.map((label) => (
-              <span
+              <Badge
                 key={label.id}
-                className="px-2 py-0.5 text-xs font-medium rounded-full"
+                variant="outline"
+                className="rounded-full"
                 style={{
                   backgroundColor: `#${label.color}20`,
                   color: `#${label.color}`,
-                  border: `1px solid #${label.color}40`,
+                  borderColor: `#${label.color}40`,
                 }}
               >
                 {label.name}
-              </span>
+              </Badge>
             ))}
           </div>
-          <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
+          <div className="flex items-center gap-4 text-sm text-muted-foreground">
             <span>Created: {formatDate(issue.created_at)}</span>
             <span>Updated: {formatDate(issue.updated_at)}</span>
             {issue.comments > 0 && (
               <span className="flex items-center gap-1">
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-                  />
-                </svg>
+                <MessageSquare className="w-4 h-4" />
                 {issue.comments}
               </span>
             )}
@@ -102,23 +89,23 @@ export function IssueCard({ issue, onClick }: IssueCardProps) {
                   src={assignee.avatar_url}
                   alt={assignee.login}
                   title={assignee.login}
-                  className="w-8 h-8 rounded-full border-2 border-white dark:border-gray-800"
+                  className="w-8 h-8 rounded-full border-2 border-background"
                 />
               ))}
               {issue.assignees.length > 3 && (
-                <span className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center text-xs font-medium border-2 border-white dark:border-gray-800">
+                <span className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-xs font-medium border-2 border-background">
                   +{issue.assignees.length - 3}
                 </span>
               )}
             </div>
           )}
           {issue.milestone && (
-            <span className="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">
+            <Badge variant="secondary" className="text-xs">
               {issue.milestone.title}
-            </span>
+            </Badge>
           )}
         </div>
       </div>
-    </div>
+    </Card>
   );
 }
