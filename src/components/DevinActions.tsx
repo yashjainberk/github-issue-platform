@@ -50,11 +50,16 @@ export function DevinActions({
   const fetchSession = useCallback(async () => {
     try {
       const response = await fetch(
-        `/api/sessions?repo_owner=${repoOwner}&repo_name=${repoName}&issue_number=${issue.number}`
+        `/api/sessions?repo_owner=${repoOwner}&repo_name=${repoName}&issue_number=${issue.number}`,
+        { cache: 'no-store' }
       );
       const data = await response.json();
       if (data.session) {
         setSession(data.session);
+        // Resume polling if the session is in an active state
+        if (data.session.status === "scoping" || data.session.status === "fixing") {
+          setPolling(true);
+        }
       }
     } catch (err) {
       console.error("Failed to fetch session:", err);
@@ -69,14 +74,23 @@ export function DevinActions({
     if (!session) return;
 
     try {
-      const response = await fetch(`/api/devin/status?session_id=${session.id}`);
+      const response = await fetch(`/api/devin/status?session_id=${session.id}`, {
+        cache: 'no-store'
+      });
       const data = await response.json();
 
       if (data.session) {
         setSession(data.session);
 
+        const isWorking =
+          data.devin_status_enum === "working" ||
+          data.devin_status_enum === "resumed" ||
+          data.devin_status_enum?.includes("requested");
+
         if (
-          data.devin_status === "completed" ||
+          !isWorking ||
+          data.devin_status_enum === "finished" ||
+          data.devin_status_enum === "expired" ||
           data.devin_status === "failed"
         ) {
           setPolling(false);

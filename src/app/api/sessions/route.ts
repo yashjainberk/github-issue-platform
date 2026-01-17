@@ -6,6 +6,8 @@ import {
 } from "@/lib/storage";
 import { IssueScopingSession } from "@/types/devin";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const repoOwner = searchParams.get("repo_owner");

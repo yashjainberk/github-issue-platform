@@ -1,0 +1,68 @@
+[
+  {
+    "issue_number": 2,
+    "issue_title": "Remove bar at the top requesting Github Permissions and Credentials.",
+    "repo_owner": "yashjainberk",
+    "repo_name": "github-issue-platform",
+    "devin_session_id": "devin-e05394236f47482f8f16c53bddcbc36e",
+    "devin_session_url": "https://app.devin.ai/sessions/e05394236f47482f8f16c53bddcbc36e",
+    "status": "scoped",
+    "scoping_result": {
+      "confidence_score": 95,
+      "complexity": "low",
+      "estimated_time": "1-2 hours",
+      "summary": "Remove the RepoConfig credentials bar component from the UI and replace user-entered values (owner, repo, token) with environment variables loaded from a .env file. The GitHub client already partially supports this pattern.",
+      "action_plan": [
+        {
+          "step": 1,
+          "type": "implementation",
+          "description": "Update .env.example to include NEXT_PUBLIC_GITHUB_OWNER and NEXT_PUBLIC_GITHUB_REPO variables alongside the existing token variable"
+        },
+        {
+          "step": 2,
+          "type": "implementation",
+          "description": "Modify src/app/page.tsx to read owner, repo, and token from environment variables instead of useState, removing the RepoConfig component usage"
+        },
+        {
+          "step": 3,
+          "type": "implementation",
+          "description": "Remove or deprecate the RepoConfig component since it will no longer be needed"
+        },
+        {
+          "step": 4,
+          "type": "implementation",
+          "description": "Update the createGitHubClient function to also support reading owner/repo from env vars if needed for consistency"
+        },
+        {
+          "step": 5,
+          "type": "testing",
+          "description": "Run lint checks to ensure code quality"
+        },
+        {
+          "step": 6,
+          "type": "documentation",
+          "description": "Update README.md with instructions for setting up the .env file"
+        }
+      ],
+      "potential_risks": [
+        "Users will lose the ability to dynamically switch repositories without restarting the application",
+        "NEXT_PUBLIC_ prefix exposes environment variables to the client-side browser bundle, which is a security consideration for the token",
+        "If .env file is not configured, the app will fail to load issues - need proper error handling"
+      ],
+      "files_to_modify": [
+        ".env.example",
+        "src/app/page.tsx",
+        "src/components/RepoConfig.tsx",
+        "src/lib/github.ts",
+        "README.md"
+      ],
+      "dependencies": []
+    },
+    "fix_session_id": null,
+    "fix_session_url": null,
+    "fix_result": null,
+    "id": "session_1768691304772_tdaelyg7b",
+    "created_at": "2026-01-17T23:08:24.772Z",
+    "updated_at": "2026-01-17T23:17:20.637Z"
+  }
+]

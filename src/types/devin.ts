@@ -1,11 +1,3 @@
-export interface DevinSession {
-  session_id: string;
-  status: "pending" | "running" | "completed" | "failed" | "blocked";
-  url: string;
-  created_at: string;
-  updated_at: string;
-}
-
 export interface ScopingResult {
   confidence_score: number;
   complexity: "low" | "medium" | "high";
@@ -60,7 +52,20 @@ export interface DevinCreateSessionResponse {
 
 export interface DevinSessionStatusResponse {
   session_id: string;
-  status: "pending" | "running" | "completed" | "failed" | "blocked";
+  status: string;
+  status_enum:
+    | "working"
+    | "blocked"
+    | "expired"
+    | "finished"
+    | "suspend_requested"
+    | "suspend_requested_frontend"
+    | "resume_requested"
+    | "resume_requested_frontend"
+    | "resumed"
+    | null;
   structured_output: Record<string, unknown> | null;
-  url: string;
+  pull_request?: {
+    url: string;
+  } | null;
 }

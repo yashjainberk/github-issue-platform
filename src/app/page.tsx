@@ -6,7 +6,6 @@ import { createGitHubClient } from "@/lib/github";
 import { IssueList } from "@/components/IssueList";
 import { IssueFiltersComponent } from "@/components/IssueFilters";
 import { IssueDetail } from "@/components/IssueDetail";
-import { RepoConfig } from "@/components/RepoConfig";
 
 const DEFAULT_FILTERS: IssueFilters = {
   state: "open",
@@ -17,10 +16,11 @@ const DEFAULT_FILTERS: IssueFilters = {
 };
 
 export default function Dashboard() {
-    const [owner, setOwner] = useState("facebook");
-    const [repo, setRepo] = useState("react");
-    const [token, setToken] = useState("");
-    const [devinApiKey, setDevinApiKey] = useState("");
+  const owner = process.env.NEXT_PUBLIC_GITHUB_OWNER || "yashjainberk";
+  const repo = process.env.NEXT_PUBLIC_GITHUB_REPO || "github-issue-platform";
+  const token = process.env.NEXT_PUBLIC_GITHUB_TOKEN || "";
+  const devinApiKey = process.env.NEXT_PUBLIC_DEVIN_API_KEY || "";
+
   const [issues, setIssues] = useState<GitHubIssue[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -60,13 +60,6 @@ export default function Dashboard() {
     fetchIssues();
   }, [fetchIssues]);
 
-    const handleConfigChange = (newOwner: string, newRepo: string, newToken: string, newDevinApiKey: string) => {
-      setOwner(newOwner);
-      setRepo(newRepo);
-      setToken(newToken);
-      setDevinApiKey(newDevinApiKey);
-    };
-
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
@@ -105,14 +98,6 @@ export default function Dashboard() {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <RepoConfig
-                  owner={owner}
-                  repo={repo}
-                  token={token}
-                  devinApiKey={devinApiKey}
-                  onConfigChange={handleConfigChange}
-                />
-
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
             <p className="text-sm text-gray-500 dark:text-gray-400">Total Issues</p>

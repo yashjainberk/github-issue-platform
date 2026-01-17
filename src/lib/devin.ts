@@ -147,36 +147,58 @@ Please update the structured output as you make progress.`;
     return this.createSession(prompt);
   }
 
-  parseScopingResult(structuredOutput: Record<string, unknown> | null): ScopingResult | null {
+  parseScopingResult(structuredOutput: any): ScopingResult | null {
     if (!structuredOutput) return null;
+
+    let data = structuredOutput;
+    if (typeof structuredOutput === "string") {
+      try {
+        data = JSON.parse(structuredOutput);
+      } catch {
+        return null;
+      }
+    }
+
+    if (typeof data !== "object" || data === null) return null;
 
     try {
       return {
-        confidence_score: (structuredOutput.confidence_score as number) || 0,
-        complexity: (structuredOutput.complexity as ScopingResult["complexity"]) || "medium",
-        estimated_time: (structuredOutput.estimated_time as string) || "Unknown",
-        summary: (structuredOutput.summary as string) || "",
-        action_plan: (structuredOutput.action_plan as ScopingResult["action_plan"]) || [],
-        potential_risks: (structuredOutput.potential_risks as string[]) || [],
-        files_to_modify: (structuredOutput.files_to_modify as string[]) || [],
-        dependencies: (structuredOutput.dependencies as string[]) || [],
+        confidence_score: (data.confidence_score as number) || 0,
+        complexity: (data.complexity as ScopingResult["complexity"]) || "medium",
+        estimated_time: (data.estimated_time as string) || "Unknown",
+        summary: (data.summary as string) || "",
+        action_plan: (data.action_plan as ScopingResult["action_plan"]) || [],
+        potential_risks: (data.potential_risks as string[]) || [],
+        files_to_modify: (data.files_to_modify as string[]) || [],
+        dependencies: (data.dependencies as string[]) || [],
       };
     } catch {
       return null;
     }
   }
 
-  parseFixResult(structuredOutput: Record<string, unknown> | null): FixResult | null {
+  parseFixResult(structuredOutput: any): FixResult | null {
     if (!structuredOutput) return null;
+
+    let data = structuredOutput;
+    if (typeof structuredOutput === "string") {
+      try {
+        data = JSON.parse(structuredOutput);
+      } catch {
+        return null;
+      }
+    }
+
+    if (typeof data !== "object" || data === null) return null;
 
     try {
       return {
-        success: (structuredOutput.success as boolean) || false,
-        pr_url: (structuredOutput.pr_url as string) || null,
-        summary: (structuredOutput.summary as string) || "",
-        changes_made: (structuredOutput.changes_made as string[]) || [],
-        tests_added: (structuredOutput.tests_added as string[]) || [],
-        notes: (structuredOutput.notes as string) || "",
+        success: (data.success as boolean) || false,
+        pr_url: (data.pr_url as string) || null,
+        summary: (data.summary as string) || "",
+        changes_made: (data.changes_made as string[]) || [],
+        tests_added: (data.tests_added as string[]) || [],
+        notes: (data.notes as string) || "",
       };
     } catch {
       return null;
