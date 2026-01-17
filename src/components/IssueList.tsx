@@ -1,13 +1,46 @@
 "use client";
 
+import { AlertCircle, ClipboardList } from "lucide-react";
 import { GitHubIssue } from "@/types/github";
 import { IssueCard } from "./IssueCard";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Card } from "@/components/ui/card";
 
 interface IssueListProps {
   issues: GitHubIssue[];
   loading: boolean;
   error: string | null;
   onIssueClick?: (issue: GitHubIssue) => void;
+}
+
+function IssueCardSkeleton() {
+  return (
+    <Card className="p-4">
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex-1 space-y-3">
+          <div className="flex items-center gap-2">
+            <Skeleton className="h-5 w-16 rounded-full" />
+            <Skeleton className="h-4 w-12" />
+          </div>
+          <Skeleton className="h-6 w-3/4" />
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-2/3" />
+          <div className="flex gap-2">
+            <Skeleton className="h-5 w-16 rounded-full" />
+            <Skeleton className="h-5 w-20 rounded-full" />
+          </div>
+          <div className="flex gap-4">
+            <Skeleton className="h-4 w-32" />
+            <Skeleton className="h-4 w-32" />
+          </div>
+        </div>
+        <div className="flex flex-col items-end gap-2">
+          <Skeleton className="h-8 w-8 rounded-full" />
+        </div>
+      </div>
+    </Card>
+  );
 }
 
 export function IssueList({
@@ -18,11 +51,10 @@ export function IssueList({
 }: IssueListProps) {
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-gray-500 dark:text-gray-400">Loading issues...</p>
-        </div>
+      <div className="space-y-4">
+        <IssueCardSkeleton />
+        <IssueCardSkeleton />
+        <IssueCardSkeleton />
       </div>
     );
   }
@@ -30,12 +62,11 @@ export function IssueList({
   if (error) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-6 max-w-md">
-          <h3 className="text-red-800 dark:text-red-200 font-semibold mb-2">
-            Error Loading Issues
-          </h3>
-          <p className="text-red-600 dark:text-red-300 text-sm">{error}</p>
-        </div>
+        <Alert variant="destructive" className="max-w-md">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Error Loading Issues</AlertTitle>
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
       </div>
     );
   }
@@ -44,23 +75,11 @@ export function IssueList({
     return (
       <div className="flex items-center justify-center py-12">
         <div className="text-center">
-          <svg
-            className="w-16 h-16 mx-auto text-gray-300 dark:text-gray-600 mb-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={1.5}
-              d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-            />
-          </svg>
-          <p className="text-gray-500 dark:text-gray-400 text-lg">
+          <ClipboardList className="w-16 h-16 mx-auto text-muted-foreground/50 mb-4" />
+          <p className="text-muted-foreground text-lg">
             No issues found
           </p>
-          <p className="text-gray-400 dark:text-gray-500 text-sm mt-1">
+          <p className="text-muted-foreground/70 text-sm mt-1">
             Try adjusting your filters or check back later
           </p>
         </div>
