@@ -87,11 +87,9 @@ export default function Dashboard() {
                 <h1 className="text-lg font-bold tracking-tight">
                   GitHub Issues
                 </h1>
-                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <span className="font-medium">{owner}</span>
-                  <span>/</span>
-                  <span className="font-medium">{repo}</span>
-                </div>
+                <p className="text-xs text-muted-foreground font-medium">
+                  {repo}
+                </p>
               </div>
             </div>
             <div className="flex items-center gap-2">
