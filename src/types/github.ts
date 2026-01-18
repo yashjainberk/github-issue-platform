@@ -49,6 +49,39 @@ export interface GitHubRepository {
   open_issues_count: number;
 }
 
+export interface GitHubComment {
+  id: number;
+  body: string;
+  user: GitHubUser;
+  created_at: string;
+  updated_at: string;
+  html_url: string;
+}
+
+export interface GitHubIssueEvent {
+  id: number;
+  node_id: string;
+  url: string;
+  actor: GitHubUser;
+  event: string;
+  commit_id: string | null;
+  commit_url: string | null;
+  created_at: string;
+  label?: {
+    name: string;
+    color: string;
+  };
+  assignee?: GitHubUser;
+  assigner?: GitHubUser;
+  milestone?: {
+    title: string;
+  };
+  rename?: {
+    from: string;
+    to: string;
+  };
+}
+
 export interface IssueFilters {
   state: "open" | "closed" | "all";
   labels: string[];

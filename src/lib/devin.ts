@@ -88,6 +88,8 @@ Instructions:
 7. files_to_modify: Array of file paths that will likely need changes
 8. dependencies: Array of external dependencies or requirements
 
+CRITICAL: Once you have a clear action plan, you MUST post it as a comment on the GitHub issue #${issueNumber}. The comment should be formatted nicely and explain what you've analyzed and what your plan is.
+
 Please update the structured output immediately as you analyze the issue.`;
 
     return this.createSession(prompt);

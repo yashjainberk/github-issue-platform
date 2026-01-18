@@ -2,8 +2,8 @@
 
 import { IssueFilters } from "@/types/github";
 import { Card } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { Search, Filter, SortAsc, Users } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -22,10 +22,11 @@ export function IssueFiltersComponent({
   onFiltersChange,
 }: IssueFiltersProps) {
   return (
-    <Card className="p-4 mb-6 bg-muted/50">
-      <div className="flex flex-wrap gap-4">
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="state-filter">State</Label>
+    <Card className="p-0 border overflow-hidden bg-card">
+      <div className="flex flex-col md:flex-row md:items-center divide-y md:divide-y-0 md:divide-x">
+        {/* State Filter */}
+        <div className="flex items-center gap-2 px-3 py-2 shrink-0 bg-muted/30">
+          <Filter className="w-3.5 h-3.5 text-muted-foreground" />
           <Select
             value={filters.state}
             onValueChange={(value) =>
@@ -35,19 +36,20 @@ export function IssueFiltersComponent({
               })
             }
           >
-            <SelectTrigger id="state-filter" className="w-[140px] bg-background">
-              <SelectValue placeholder="Select state" />
+            <SelectTrigger className="border-none shadow-none focus:ring-0 h-6 p-0 bg-transparent text-xs font-medium w-[100px]">
+              <SelectValue placeholder="State" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All</SelectItem>
-              <SelectItem value="open">Open</SelectItem>
-              <SelectItem value="closed">Closed</SelectItem>
+              <SelectItem value="all">All Issues</SelectItem>
+              <SelectItem value="open">Open Only</SelectItem>
+              <SelectItem value="closed">Closed Only</SelectItem>
             </SelectContent>
           </Select>
         </div>
 
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="sort-filter">Sort By</Label>
+        {/* Sort By */}
+        <div className="flex items-center gap-2 px-3 py-2 shrink-0">
+          <SortAsc className="w-3.5 h-3.5 text-muted-foreground" />
           <Select
             value={filters.sort}
             onValueChange={(value) =>
@@ -57,8 +59,8 @@ export function IssueFiltersComponent({
               })
             }
           >
-            <SelectTrigger id="sort-filter" className="w-[140px] bg-background">
-              <SelectValue placeholder="Sort by" />
+            <SelectTrigger className="border-none shadow-none focus:ring-0 h-6 p-0 bg-transparent text-xs font-medium w-[100px]">
+              <SelectValue placeholder="Sort" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="created">Created</SelectItem>
@@ -68,31 +70,10 @@ export function IssueFiltersComponent({
           </Select>
         </div>
 
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="direction-filter">Direction</Label>
-          <Select
-            value={filters.direction}
-            onValueChange={(value) =>
-              onFiltersChange({
-                ...filters,
-                direction: value as IssueFilters["direction"],
-              })
-            }
-          >
-            <SelectTrigger id="direction-filter" className="w-[150px] bg-background">
-              <SelectValue placeholder="Direction" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="desc">Newest First</SelectItem>
-              <SelectItem value="asc">Oldest First</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="assignee-filter">Assignee</Label>
+        {/* Assignee Search */}
+        <div className="flex items-center gap-2 px-3 py-2 flex-1 min-w-[200px]">
+          <Search className="w-3.5 h-3.5 text-muted-foreground" />
           <Input
-            id="assignee-filter"
             type="text"
             value={filters.assignee || ""}
             onChange={(e) =>
@@ -101,8 +82,8 @@ export function IssueFiltersComponent({
                 assignee: e.target.value || null,
               })
             }
-            placeholder="Filter by assignee"
-            className="w-[180px] bg-background"
+            placeholder="Search assignee..."
+            className="border-none shadow-none focus-visible:ring-0 h-6 p-0 bg-transparent text-xs placeholder:text-muted-foreground"
           />
         </div>
       </div>

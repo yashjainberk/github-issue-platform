@@ -73,17 +73,17 @@ export function IssueList({
 
   if (issues.length === 0) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <div className="text-center">
-          <ClipboardList className="w-16 h-16 mx-auto text-muted-foreground/50 mb-4" />
-          <p className="text-muted-foreground text-lg">
-            No issues found
-          </p>
-          <p className="text-muted-foreground/70 text-sm mt-1">
-            Try adjusting your filters or check back later
-          </p>
+      <Card className="flex flex-col items-center justify-center py-20 bg-white dark:bg-gray-900 border-dashed border-2 border-gray-100 dark:border-gray-800">
+        <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-full mb-4">
+          <ClipboardList className="w-10 h-10 text-gray-400 dark:text-gray-500" />
         </div>
-      </div>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
+          No issues found
+        </h3>
+        <p className="text-gray-500 dark:text-gray-400 text-sm max-w-[280px] text-center">
+          We couldn't find any issues matching your current filters. Try adjusting them or search for something else.
+        </p>
+      </Card>
     );
   }
 

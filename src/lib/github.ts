@@ -24,7 +24,10 @@ export class GitHubClient {
   async getRepository(owner: string, repo: string): Promise<GitHubRepository> {
     const response = await fetch(
       `${GITHUB_API_BASE}/repos/${owner}/${repo}`,
-      { headers: this.getHeaders() }
+      { 
+        headers: this.getHeaders(),
+        cache: 'no-store'
+      }
     );
 
     if (!response.ok) {
@@ -53,7 +56,10 @@ export class GitHubClient {
 
     const response = await fetch(
       `${GITHUB_API_BASE}/repos/${owner}/${repo}/issues?${params.toString()}`,
-      { headers: this.getHeaders() }
+      { 
+        headers: this.getHeaders(),
+        cache: 'no-store'
+      }
     );
 
     if (!response.ok) {
@@ -72,11 +78,104 @@ export class GitHubClient {
   ): Promise<GitHubIssue> {
     const response = await fetch(
       `${GITHUB_API_BASE}/repos/${owner}/${repo}/issues/${issueNumber}`,
-      { headers: this.getHeaders() }
+      { 
+        headers: this.getHeaders(),
+        cache: 'no-store'
+      }
     );
 
     if (!response.ok) {
       throw new Error(`Failed to fetch issue: ${response.statusText}`);
+    }
+
+    return response.json();
+  }
+
+  async getIssueComments(
+    owner: string,
+    repo: string,
+    issueNumber: number
+  ): Promise<any[]> {
+    const response = await fetch(
+      `${GITHUB_API_BASE}/repos/${owner}/${repo}/issues/${issueNumber}/comments`,
+      { 
+        headers: this.getHeaders(),
+        cache: 'no-store'
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch comments: ${response.statusText}`);
+    }
+
+    return response.json();
+  }
+
+  async getIssueEvents(
+    owner: string,
+    repo: string,
+    issueNumber: number
+  ): Promise<any[]> {
+    const response = await fetch(
+      `${GITHUB_API_BASE}/repos/${owner}/${repo}/issues/${issueNumber}/events`,
+      { 
+        headers: this.getHeaders(),
+        cache: 'no-store'
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch issue events: ${response.statusText}`);
+    }
+
+    return response.json();
+  }
+
+  async addIssueComment(
+    owner: string,
+    repo: string,
+    issueNumber: number,
+    body: string
+  ): Promise<void> {
+    const response = await fetch(
+      `${GITHUB_API_BASE}/repos/${owner}/${repo}/issues/${issueNumber}/comments`,
+      {
+        method: "POST",
+        headers: this.getHeaders(),
+        body: JSON.stringify({ body }),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Failed to add comment: ${response.statusText}`);
+    }
+  }
+
+  async createIssue(
+    owner: string,
+    repo: string,
+    title: string,
+    body: string,
+    labels?: string[],
+    assignees?: string[]
+  ): Promise<GitHubIssue> {
+    const response = await fetch(
+      `${GITHUB_API_BASE}/repos/${owner}/${repo}/issues`,
+      {
+        method: "POST",
+        headers: this.getHeaders(),
+        body: JSON.stringify({
+          title,
+          body,
+          labels,
+          assignees,
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || `Failed to create issue: ${response.statusText}`);
     }
 
     return response.json();

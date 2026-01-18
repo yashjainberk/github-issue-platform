@@ -25,28 +25,15 @@ interface DevinActionsProps {
 }
 
 function getConfidenceColor(score: number): string {
-  if (score >= 80) return "text-green-600 dark:text-green-400";
-  if (score >= 50) return "text-yellow-600 dark:text-yellow-400";
-  return "text-red-600 dark:text-red-400";
+  if (score >= 80) return "text-emerald-500";
+  if (score >= 50) return "text-amber-500";
+  return "text-red-500";
 }
 
 function getConfidenceBgColor(score: number): string {
-  if (score >= 80) return "bg-green-100 dark:bg-green-900/30";
-  if (score >= 50) return "bg-yellow-100 dark:bg-yellow-900/30";
-  return "bg-red-100 dark:bg-red-900/30";
-}
-
-function getComplexityVariant(complexity: string): "success" | "warning" | "destructive" | "secondary" {
-  switch (complexity) {
-    case "low":
-      return "success";
-    case "medium":
-      return "warning";
-    case "high":
-      return "destructive";
-    default:
-      return "secondary";
-  }
+  if (score >= 80) return "bg-emerald-500/10 border border-emerald-500/20";
+  if (score >= 50) return "bg-amber-500/10 border border-amber-500/20";
+  return "bg-red-500/10 border border-red-500/20";
 }
 
 export function DevinActions({
@@ -69,7 +56,6 @@ export function DevinActions({
       const data = await response.json();
       if (data.session) {
         setSession(data.session);
-        // Resume polling if the session is in an active state
         if (data.session.status === "scoping" || data.session.status === "fixing") {
           setPolling(true);
         }
@@ -196,146 +182,50 @@ export function DevinActions({
   };
 
   const renderScopingResult = (result: ScopingResult) => (
-    <Card className="mt-4 p-4 space-y-4">
+    <Card className="mt-4 p-4 space-y-4 border shadow-sm bg-muted/20">
       <div className="flex flex-wrap items-center gap-4">
-        <div
-          className={`px-4 py-2 rounded-lg ${getConfidenceBgColor(
-            result.confidence_score
-          )}`}
-        >
-          <p className="text-sm text-muted-foreground">Confidence Score</p>
-          <p
-            className={`text-2xl font-bold ${getConfidenceColor(
-              result.confidence_score
-            )}`}
-          >
+        <div className={`px-3 py-1.5 rounded-md ${getConfidenceBgColor(result.confidence_score)}`}>
+          <p className="text-[10px] uppercase font-bold text-muted-foreground mb-0.5">Confidence</p>
+          <p className={`text-xl font-bold ${getConfidenceColor(result.confidence_score)}`}>
             {result.confidence_score}%
           </p>
         </div>
         <div>
-          <Badge variant={getComplexityVariant(result.complexity)}>
+          <Badge variant="outline" className="border-muted-foreground/30 capitalize">
             {result.complexity} complexity
           </Badge>
         </div>
-        <div className="text-muted-foreground">
-          <p className="text-sm">Estimated Time</p>
-          <p className="font-medium">{result.estimated_time}</p>
+        <div>
+          <p className="text-[10px] uppercase font-bold text-muted-foreground mb-0.5">Estimated Time</p>
+          <p className="text-sm font-semibold">{result.estimated_time}</p>
         </div>
       </div>
 
       <div>
-        <h4 className="font-semibold text-foreground mb-2">Summary</h4>
-        <p className="text-muted-foreground">{result.summary}</p>
+        <h4 className="text-sm font-bold mb-1.5">Summary</h4>
+        <p className="text-sm text-muted-foreground leading-relaxed">{result.summary}</p>
       </div>
 
       {result.action_plan.length > 0 && (
         <div>
-          <h4 className="font-semibold text-foreground mb-2">Action Plan</h4>
-          <ol className="space-y-2">
+          <h4 className="text-sm font-bold mb-1.5">Action Plan</h4>
+          <div className="space-y-2">
             {result.action_plan.map((item) => (
-              <li key={item.step} className="flex items-start gap-2">
-                <span className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 flex items-center justify-center text-sm font-medium">
+              <div key={item.step} className="flex items-start gap-3">
+                <span className="flex-shrink-0 w-5 h-5 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold border border-primary/20">
                   {item.step}
                 </span>
-                <div>
-                  <Badge variant="secondary" className="mr-2 text-xs">
-                    {item.type}
-                  </Badge>
-                  <span className="text-muted-foreground">
-                    {item.description}
-                  </span>
-                </div>
-              </li>
+                <p className="text-sm text-muted-foreground">
+                  <span className="font-semibold text-foreground mr-1 capitalize">[{item.type}]</span>
+                  {item.description}
+                </p>
+              </div>
             ))}
-          </ol>
-        </div>
-      )}
-
-      {result.files_to_modify.length > 0 && (
-        <div>
-          <h4 className="font-semibold text-foreground mb-2">Files to Modify</h4>
-          <ul className="space-y-1">
-            {result.files_to_modify.map((file, index) => (
-              <li
-                key={index}
-                className="text-sm font-mono text-muted-foreground bg-muted px-2 py-1 rounded"
-              >
-                {file}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      {result.potential_risks.length > 0 && (
-        <div>
-          <h4 className="font-semibold text-foreground mb-2">Potential Risks</h4>
-          <ul className="space-y-1">
-            {result.potential_risks.map((risk, index) => (
-              <li
-                key={index}
-                className="text-sm text-orange-700 dark:text-orange-300 flex items-start gap-2"
-              >
-                <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
-                {risk}
-              </li>
-            ))}
-          </ul>
+          </div>
         </div>
       )}
     </Card>
   );
-
-  const renderFixResult = () => {
-    if (!session?.fix_result) return null;
-
-    const result = session.fix_result;
-
-    return (
-      <Alert variant={result.success ? "success" : "destructive"} className="mt-4">
-        <div className="flex items-center gap-2 mb-3">
-          {result.success ? (
-            <CheckCircle className="w-6 h-6 text-green-600 dark:text-green-400" />
-          ) : (
-            <XCircle className="w-6 h-6 text-red-600 dark:text-red-400" />
-          )}
-          <h4 className="font-semibold text-foreground">
-            {result.success ? "Fix Completed" : "Fix Failed"}
-          </h4>
-        </div>
-
-        <AlertDescription>
-          <p className="text-muted-foreground mb-3">{result.summary}</p>
-
-          {result.pr_url && (
-            <Button asChild className="bg-blue-600 hover:bg-blue-700 text-white">
-              <a
-                href={result.pr_url}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Code className="w-4 h-4 mr-2" />
-                View Pull Request
-              </a>
-            </Button>
-          )}
-
-          {result.changes_made.length > 0 && (
-            <div className="mt-3">
-              <p className="text-sm font-medium text-foreground mb-1">
-                Changes Made:
-              </p>
-              <ul className="text-sm text-muted-foreground list-disc list-inside">
-                {result.changes_made.map((change, index) => (
-                  <li key={index}>{change}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </AlertDescription>
-      </Alert>
-    );
-  };
 
   const isScoping = session?.status === "scoping";
   const isScoped = session?.status === "scoped";
@@ -344,112 +234,55 @@ export function DevinActions({
   const isFailed = session?.status === "failed";
 
   return (
-    <div className="border-t pt-4 mt-4">
-      <h3 className="text-lg font-semibold text-foreground mb-4">
-        Devin Integration
-      </h3>
+    <div className="border-t pt-6 mt-6">
+      <div className="flex items-center gap-2 mb-4">
+        <div className="bg-primary/10 p-1.5 rounded-md">
+          <Code className="w-4 h-4 text-primary" />
+        </div>
+        <h3 className="text-base font-bold">Devin Agent</h3>
+      </div>
 
-      {error && (
-        <Alert variant="destructive" className="mb-4">
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
-
-      {!devinApiKey && (
-        <Alert variant="warning" className="mb-4">
-          <AlertDescription>
-            Devin API key is not configured. Please add your API key in the
-            repository configuration to enable Devin integration.
-          </AlertDescription>
-        </Alert>
-      )}
-
-      <div className="flex flex-wrap gap-3">
+      <div className="flex flex-wrap gap-2">
         {!session && (
           <Button
             onClick={handleScope}
             disabled={loading || !devinApiKey}
-            className="bg-purple-600 hover:bg-purple-700 text-white"
+            size="sm"
+            className="gap-2"
           >
-            {loading ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <Lightbulb className="w-4 h-4" />
-            )}
-            Scope with Devin
+            {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Lightbulb className="w-3.5 h-3.5" />}
+            Analyze with Devin
           </Button>
         )}
 
         {isScoping && (
-          <div className="flex items-center gap-2 text-purple-600 dark:text-purple-400">
-            <Loader2 className="w-4 h-4 animate-spin" />
-            <span>Scoping in progress...</span>
-            {session?.devin_session_url && (
-              <Button variant="link" asChild className="p-0 h-auto">
-                <a
-                  href={session.devin_session_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  View Session
-                </a>
-              </Button>
-            )}
-          </div>
+          <Button disabled size="sm" variant="outline" className="gap-2">
+            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            Analyzing...
+          </Button>
         )}
 
         {isScoped && (
           <Button
             onClick={handleFix}
             disabled={loading || !devinApiKey}
-            className="bg-green-600 hover:bg-green-700 text-white"
+            size="sm"
+            className="bg-emerald-600 hover:bg-emerald-700 text-white gap-2"
           >
-            {loading ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <Check className="w-4 h-4" />
-            )}
-            Fix with Devin
+            {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
+            Apply Fix
           </Button>
         )}
 
         {isFixing && (
-          <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
-            <Loader2 className="w-4 h-4 animate-spin" />
-            <span>Fix in progress...</span>
-            {session?.fix_session_url && (
-              <Button variant="link" asChild className="p-0 h-auto">
-                <a
-                  href={session.fix_session_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  View Session
-                </a>
-              </Button>
-            )}
-          </div>
-        )}
-
-        {isFailed && (
-          <div className="flex items-center gap-2">
-            <span className="text-red-600 dark:text-red-400">
-              Session failed
-            </span>
-            <Button
-              variant="link"
-              onClick={handleScope}
-              disabled={loading || !devinApiKey}
-              className="p-0 h-auto"
-            >
-              Retry
-            </Button>
-          </div>
+          <Button disabled size="sm" variant="outline" className="gap-2 text-emerald-600 border-emerald-600/20 bg-emerald-500/5">
+            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            Applying Fix...
+          </Button>
         )}
       </div>
 
       {session?.scoping_result && renderScopingResult(session.scoping_result)}
-      {isFixed && renderFixResult()}
     </div>
   );
 }

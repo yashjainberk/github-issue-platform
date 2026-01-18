@@ -37,6 +37,7 @@ export interface IssueScopingSession {
   fix_session_id: string | null;
   fix_session_url: string | null;
   fix_result: FixResult | null;
+  comment_posted?: boolean;
   created_at: string;
   updated_at: string;
 }
