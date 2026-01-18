@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { LayoutDashboard, CircleDot, CheckCircle2, ListFilter, Plus } from "lucide-react";
-import { GitHubIssue, IssueFilters } from "@/types/github";
+import { GitHubIssue, IssueFilters, getCategoryFromLabels } from "@/types/github";
 import { createGitHubClient } from "@/lib/github";
 import { IssueList } from "@/components/IssueList";
 import { IssueFiltersComponent } from "@/components/IssueFilters";
@@ -18,6 +18,7 @@ const DEFAULT_FILTERS: IssueFilters = {
   assignee: null,
   sort: "updated",
   direction: "desc",
+  category: "all",
 };
 
 export default function Dashboard() {
@@ -52,7 +53,11 @@ export default function Dashboard() {
         client.getIssues(owner, repo, { state: "closed" })
       ]);
 
-      setIssues(fetchedIssues);
+      const filteredIssues = filters.category === "all" 
+        ? fetchedIssues 
+        : fetchedIssues.filter(issue => getCategoryFromLabels(issue.labels) === filters.category);
+      
+      setIssues(filteredIssues);
 
       const openCount = openIssuesResponse.length;
       const closedCount = closedIssuesResponse.length;

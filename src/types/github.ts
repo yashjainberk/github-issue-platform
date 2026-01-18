@@ -82,10 +82,39 @@ export interface GitHubIssueEvent {
   };
 }
 
+export type IssueCategory = "bugfix" | "feature" | "unspecified";
+
+export const CATEGORY_LABELS: Record<IssueCategory, string> = {
+  bugfix: "category:bugfix",
+  feature: "category:feature",
+  unspecified: "category:unspecified",
+};
+
+export const CATEGORY_DISPLAY_NAMES: Record<IssueCategory, string> = {
+  bugfix: "Bug Fix",
+  feature: "Feature Request",
+  unspecified: "Unspecified",
+};
+
+export const CATEGORY_COLORS: Record<IssueCategory, string> = {
+  bugfix: "d73a4a",
+  feature: "a2eeef",
+  unspecified: "cfd3d7",
+};
+
+export function getCategoryFromLabels(labels: GitHubLabel[]): IssueCategory {
+  for (const label of labels) {
+    if (label.name === CATEGORY_LABELS.bugfix) return "bugfix";
+    if (label.name === CATEGORY_LABELS.feature) return "feature";
+  }
+  return "unspecified";
+}
+
 export interface IssueFilters {
   state: "open" | "closed" | "all";
   labels: string[];
   assignee: string | null;
   sort: "created" | "updated" | "comments";
   direction: "asc" | "desc";
+  category: IssueCategory | "all";
 }

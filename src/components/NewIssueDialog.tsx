@@ -9,10 +9,18 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { createGitHubClient } from "@/lib/github";
+import { IssueCategory, CATEGORY_LABELS, CATEGORY_DISPLAY_NAMES } from "@/types/github";
 
 interface NewIssueDialogProps {
   isOpen: boolean;
@@ -31,6 +39,7 @@ export function NewIssueDialog({
 }: NewIssueDialogProps) {
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
+  const [category, setCategory] = useState<IssueCategory>("unspecified");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -43,11 +52,13 @@ export function NewIssueDialog({
 
     try {
       const client = createGitHubClient();
-      await client.createIssue(owner, repo, title, body);
+      const labels = category !== "unspecified" ? [CATEGORY_LABELS[category]] : [];
+      await client.createIssue(owner, repo, title, body, labels);
       
       // Reset form
       setTitle("");
       setBody("");
+      setCategory("unspecified");
       
       // Close dialog first for better UX
       onClose();
@@ -95,6 +106,24 @@ export function NewIssueDialog({
               placeholder="Describe the problem or feature request"
               className="w-full min-h-[150px] p-3 rounded-md bg-muted/30 border-none focus:outline-none focus:ring-1 focus:ring-ring text-sm resize-none"
             />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="category" className="text-sm font-semibold">
+              Category
+            </Label>
+            <Select
+              value={category}
+              onValueChange={(value) => setCategory(value as IssueCategory)}
+            >
+              <SelectTrigger className="bg-muted/30 border-none focus:ring-1">
+                <SelectValue placeholder="Select a category" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="unspecified">{CATEGORY_DISPLAY_NAMES.unspecified}</SelectItem>
+                <SelectItem value="bugfix">{CATEGORY_DISPLAY_NAMES.bugfix}</SelectItem>
+                <SelectItem value="feature">{CATEGORY_DISPLAY_NAMES.feature}</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
           {error && (
             <p className="text-xs text-destructive font-medium bg-destructive/10 p-2 rounded">

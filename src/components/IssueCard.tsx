@@ -1,7 +1,7 @@
 "use client";
 
-import { MessageSquare, CircleDot, CheckCircle2, Clock, User } from "lucide-react";
-import { GitHubIssue } from "@/types/github";
+import { MessageSquare, CircleDot, CheckCircle2, Clock } from "lucide-react";
+import { GitHubIssue, getCategoryFromLabels, CATEGORY_DISPLAY_NAMES, CATEGORY_COLORS } from "@/types/github";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
@@ -40,6 +40,8 @@ function getStateStyles(state: string, stateReason: string | null) {
 
 export function IssueCard({ issue, onClick }: IssueCardProps) {
   const status = getStateStyles(issue.state, issue.state_reason);
+  const category = getCategoryFromLabels(issue.labels);
+  const categoryColor = CATEGORY_COLORS[category];
 
   return (
     <Card
@@ -113,13 +115,24 @@ export function IssueCard({ issue, onClick }: IssueCardProps) {
               </div>
             </div>
 
-            <div className="shrink-0 pt-0.5">
+            <div className="shrink-0 pt-0.5 flex flex-col gap-1.5 items-end">
               <Badge 
                 variant="secondary" 
                 className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider"
               >
                 {status.icon}
                 {status.label}
+              </Badge>
+              <Badge
+                variant="outline"
+                className="px-1.5 py-0.5 text-[10px] font-medium"
+                style={{
+                  backgroundColor: `#${categoryColor}15`,
+                  color: `#${categoryColor}`,
+                  borderColor: `#${categoryColor}40`,
+                }}
+              >
+                {CATEGORY_DISPLAY_NAMES[category]}
               </Badge>
             </div>
           </div>

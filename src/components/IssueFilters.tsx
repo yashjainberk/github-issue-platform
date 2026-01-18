@@ -1,9 +1,9 @@
 "use client";
 
-import { IssueFilters } from "@/types/github";
+import { IssueFilters, IssueCategory, CATEGORY_DISPLAY_NAMES } from "@/types/github";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Search, Filter, SortAsc, Users } from "lucide-react";
+import { Search, Filter, SortAsc, Tag } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -66,6 +66,30 @@ export function IssueFiltersComponent({
               <SelectItem value="created">Created</SelectItem>
               <SelectItem value="updated">Updated</SelectItem>
               <SelectItem value="comments">Comments</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Category Filter */}
+        <div className="flex items-center gap-2 px-3 py-2 shrink-0">
+          <Tag className="w-3.5 h-3.5 text-muted-foreground" />
+          <Select
+            value={filters.category}
+            onValueChange={(value) =>
+              onFiltersChange({
+                ...filters,
+                category: value as IssueCategory | "all",
+              })
+            }
+          >
+            <SelectTrigger className="border-none shadow-none focus:ring-0 h-6 p-0 bg-transparent text-xs font-medium w-[120px]">
+              <SelectValue placeholder="Category" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Categories</SelectItem>
+              <SelectItem value="bugfix">{CATEGORY_DISPLAY_NAMES.bugfix}</SelectItem>
+              <SelectItem value="feature">{CATEGORY_DISPLAY_NAMES.feature}</SelectItem>
+              <SelectItem value="unspecified">{CATEGORY_DISPLAY_NAMES.unspecified}</SelectItem>
             </SelectContent>
           </Select>
         </div>

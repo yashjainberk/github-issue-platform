@@ -13,7 +13,7 @@ import {
   History,
   Clock
 } from "lucide-react";
-import { GitHubIssue, GitHubComment, GitHubIssueEvent } from "@/types/github";
+import { GitHubIssue, GitHubComment, GitHubIssueEvent, getCategoryFromLabels, CATEGORY_DISPLAY_NAMES, CATEGORY_COLORS } from "@/types/github";
 import { DevinActions } from "./DevinActions";
 import { createGitHubClient } from "@/lib/github";
 import {
@@ -184,6 +184,23 @@ export function IssueDetail({ issue, onClose, repoOwner, repoName, devinApiKey }
             <Badge variant={issue.state === "open" ? "default" : "secondary"} className="h-5 px-1.5 uppercase tracking-wider text-[10px]">
               {issue.state}
             </Badge>
+            {(() => {
+              const category = getCategoryFromLabels(issue.labels);
+              const categoryColor = CATEGORY_COLORS[category];
+              return (
+                <Badge
+                  variant="outline"
+                  className="h-5 px-1.5 text-[10px]"
+                  style={{
+                    backgroundColor: `#${categoryColor}15`,
+                    color: `#${categoryColor}`,
+                    borderColor: `#${categoryColor}40`,
+                  }}
+                >
+                  {CATEGORY_DISPLAY_NAMES[category]}
+                </Badge>
+              );
+            })()}
             <span className="text-muted-foreground text-sm font-medium">
               #{issue.number}
             </span>
