@@ -126,5 +126,64 @@
     "id": "session_1768694636631_d8s4j7co4",
     "created_at": "2026-01-18T00:03:56.631Z",
     "updated_at": "2026-01-18T00:10:15.715Z"
+  },
+  {
+    "issue_number": 8,
+    "issue_title": "Don't show the repository path in the UI instead only show the repo name",
+    "repo_owner": "yashjainberk",
+    "repo_name": "github-issue-platform",
+    "devin_session_id": "devin-4f73607a52b14fde91e2ac2c2714f347",
+    "devin_session_url": "https://app.devin.ai/sessions/4f73607a52b14fde91e2ac2c2714f347",
+    "status": "fixed",
+    "scoping_result": {
+      "confidence_score": 95,
+      "complexity": "low",
+      "estimated_time": "15-30 minutes",
+      "summary": "Change the UI to display only the repository name instead of the full repository path.",
+      "action_plan": [
+        {
+          "step": 1,
+          "type": "analysis",
+          "description": "Identify all UI locations displaying repository path"
+        },
+        {
+          "step": 2,
+          "type": "implementation",
+          "description": "Modify src/app/page.tsx to remove the owner and '/' separator, keeping only the repo name"
+        },
+        {
+          "step": 3,
+          "type": "testing",
+          "description": "Verify the UI displays correctly with only the repo name"
+        },
+        {
+          "step": 4,
+          "type": "documentation",
+          "description": "Update PR description with changes made"
+        }
+      ],
+      "potential_risks": [
+        "Minimal risk - this is a simple UI display change with no impact on functionality."
+      ],
+      "files_to_modify": [
+        "src/app/page.tsx"
+      ],
+      "dependencies": []
+    },
+    "fix_session_id": "devin-d4e0aff20aed467ba2396d57bb7e1fe9",
+    "fix_session_url": "https://app.devin.ai/sessions/d4e0aff20aed467ba2396d57bb7e1fe9",
+    "fix_result": {
+      "success": true,
+      "pr_url": "https://github.com/yashjainberk/github-issue-platform/pull/9",
+      "summary": "Changed the header to display only the repository name instead of the full owner/repo path.",
+      "changes_made": [
+        "Modified src/app/page.tsx to show only repo name in the header subtitle."
+      ],
+      "tests_added": [],
+      "notes": "No CI checks configured for this repository. Pre-existing lint warnings/errors in other files were not addressed as they are unrelated to this change."
+    },
+    "id": "session_1768695495966_mff8jof6z",
+    "created_at": "2026-01-18T00:18:15.966Z",
+    "updated_at": "2026-01-18T00:23:49.625Z"
   }
 ]

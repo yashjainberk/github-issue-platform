@@ -45,10 +45,18 @@ export function NewIssueDialog({
       const client = createGitHubClient();
       await client.createIssue(owner, repo, title, body);
       
+      // Reset form
       setTitle("");
       setBody("");
-      onIssueCreated();
+      
+      // Close dialog first for better UX
       onClose();
+      
+      // Small delay to ensure GitHub's API has the new issue indexed
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Refresh the issue list
+      onIssueCreated();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to create issue");
     } finally {

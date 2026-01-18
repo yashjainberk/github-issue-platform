@@ -229,18 +229,25 @@ export function DevinActions({
 
   const renderFixResult = () => {
     if (!session?.fix_result) return null;
+    
+    // Don't show result if still in progress
+    if (session.status === "fixing") return null;
+    
     const result = session.fix_result;
+    
+    // Determine actual success: if there's a PR or changes, consider it successful
+    const isSuccessful = result.success || !!result.pr_url || result.changes_made.length > 0;
 
     return (
-      <Alert variant={result.success ? "default" : "destructive"} className={`mt-4 ${result.success ? "border-emerald-500/20 bg-emerald-500/5" : ""}`}>
+      <Alert variant={isSuccessful ? "default" : "destructive"} className={`mt-4 ${isSuccessful ? "border-emerald-500/20 bg-emerald-500/5" : ""}`}>
         <div className="flex items-center gap-2 mb-3">
-          {result.success ? (
+          {isSuccessful ? (
             <CheckCircle className="w-5 h-5 text-emerald-500" />
           ) : (
             <XCircle className="w-5 h-5 text-red-500" />
           )}
           <h4 className="font-bold text-sm">
-            {result.success ? "Fix Completed" : "Fix Failed"}
+            {isSuccessful ? "Fix Completed" : "Fix Failed"}
           </h4>
         </div>
 
