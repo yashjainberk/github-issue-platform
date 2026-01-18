@@ -227,6 +227,53 @@ export function DevinActions({
     </Card>
   );
 
+  const renderFixResult = () => {
+    if (!session?.fix_result) return null;
+    const result = session.fix_result;
+
+    return (
+      <Alert variant={result.success ? "default" : "destructive"} className={`mt-4 ${result.success ? "border-emerald-500/20 bg-emerald-500/5" : ""}`}>
+        <div className="flex items-center gap-2 mb-3">
+          {result.success ? (
+            <CheckCircle className="w-5 h-5 text-emerald-500" />
+          ) : (
+            <XCircle className="w-5 h-5 text-red-500" />
+          )}
+          <h4 className="font-bold text-sm">
+            {result.success ? "Fix Completed" : "Fix Failed"}
+          </h4>
+        </div>
+
+        <AlertDescription className="space-y-4">
+          <p className="text-sm text-muted-foreground leading-relaxed">{result.summary}</p>
+
+          {result.pr_url && (
+            <Button asChild size="sm" className="bg-emerald-600 hover:bg-emerald-700 text-white">
+              <a href={result.pr_url} target="_blank" rel="noopener noreferrer">
+                <Code className="w-3.5 h-3.5 mr-2" />
+                View Pull Request
+              </a>
+            </Button>
+          )}
+
+          {result.changes_made.length > 0 && (
+            <div className="pt-2">
+              <p className="text-[10px] uppercase font-bold text-muted-foreground mb-2">Changes Made</p>
+              <ul className="text-xs text-muted-foreground space-y-1.5">
+                {result.changes_made.map((change, index) => (
+                  <li key={index} className="flex items-start gap-2">
+                    <span className="text-emerald-500 mt-0.5">•</span>
+                    {change}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </AlertDescription>
+      </Alert>
+    );
+  };
+
   const isScoping = session?.status === "scoping";
   const isScoped = session?.status === "scoped";
   const isFixing = session?.status === "fixing";
@@ -283,6 +330,7 @@ export function DevinActions({
       </div>
 
       {session?.scoping_result && renderScopingResult(session.scoping_result)}
+      {session?.fix_result && renderFixResult()}
     </div>
   );
 }

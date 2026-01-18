@@ -87,6 +87,95 @@ export function IssueDetail({ issue, onClose, repoOwner, repoName, devinApiKey }
     fetchTimeline();
   }, [repoOwner, repoName, issue.number]);
 
+  const renderEvent = (event: GitHubIssueEvent) => {
+    const actor = event.actor;
+    const time = formatRelativeTime(event.created_at);
+
+    switch (event.event) {
+      case 'assigned':
+        return (
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <UserPlus className="w-3.5 h-3.5" />
+            <img src={actor.avatar_url} className="w-3.5 h-3.5 rounded-full border" />
+            <span className="font-semibold text-foreground">{actor.login}</span>
+            <span>assigned this to</span>
+            <span className="font-semibold text-foreground">{event.assignee?.login}</span>
+            <span>• {time}</span>
+          </div>
+        );
+      case 'labeled':
+        return (
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <Tag className="w-3.5 h-3.5" />
+            <img src={actor.avatar_url} className="w-3.5 h-3.5 rounded-full border" />
+            <span className="font-semibold text-foreground">{actor.login}</span>
+            <span>added</span>
+            <Badge 
+              variant="outline" 
+              className="px-1.5 py-0 text-[9px] font-bold uppercase tracking-tighter"
+              style={{
+                backgroundColor: `#${event.label?.color}15`,
+                color: `#${event.label?.color}`,
+                borderColor: `#${event.label?.color}30`,
+              }}
+            >
+              {event.label?.name}
+            </Badge>
+            <span>label • {time}</span>
+          </div>
+        );
+      case 'closed':
+        return (
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+            <img src={actor.avatar_url} className="w-3.5 h-3.5 rounded-full border" />
+            <span className="font-semibold text-foreground">{actor.login}</span>
+            <span>closed this</span>
+            {event.commit_id && (
+              <>
+                <span>in</span>
+                <code className="text-[10px] bg-muted px-1 rounded font-mono">{event.commit_id.substring(0, 7)}</code>
+              </>
+            )}
+            <span>• {time}</span>
+          </div>
+        );
+      case 'reopened':
+        return (
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <CircleDot className="w-3.5 h-3.5 text-primary" />
+            <img src={actor.avatar_url} className="w-3.5 h-3.5 rounded-full border" />
+            <span className="font-semibold text-foreground">{actor.login}</span>
+            <span>reopened this</span>
+            <span>• {time}</span>
+          </div>
+        );
+      case 'referenced':
+        return (
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <GitCommit className="w-3.5 h-3.5" />
+            <img src={actor.avatar_url} className="w-3.5 h-3.5 rounded-full border" />
+            <span className="font-semibold text-foreground">{actor.login}</span>
+            <span>referenced this</span>
+            {event.commit_id && (
+              <code className="text-[10px] bg-muted px-1 rounded font-mono">{event.commit_id.substring(0, 7)}</code>
+            )}
+            <span>• {time}</span>
+          </div>
+        );
+      default:
+        return (
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <History className="w-3.5 h-3.5" />
+            <img src={actor.avatar_url} className="w-3.5 h-3.5 rounded-full border" />
+            <span className="font-semibold text-foreground">{actor.login}</span>
+            <span className="capitalize">{event.event.replace(/_/g, ' ')}</span>
+            <span>• {time}</span>
+          </div>
+        );
+    }
+  };
+
   return (
     <Dialog open={true} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-hidden flex flex-col p-0 border-none bg-background shadow-2xl">
@@ -176,9 +265,7 @@ export function IssueDetail({ issue, onClose, repoOwner, repoName, devinApiKey }
                         </Card>
                       ) : (
                         <div className="flex items-center gap-2 py-1">
-                          <span className="text-xs font-semibold">{item.data.actor.login}</span>
-                          <span className="text-xs text-muted-foreground">{item.data.event} this</span>
-                          <span className="text-[10px] text-muted-foreground ml-auto">{formatRelativeTime(item.data.created_at)}</span>
+                          {renderEvent(item.data)}
                         </div>
                       )}
                     </div>

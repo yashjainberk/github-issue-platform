@@ -183,5 +183,10 @@ export class GitHubClient {
 }
 
 export function createGitHubClient(token?: string): GitHubClient {
-  return new GitHubClient(token || process.env.NEXT_PUBLIC_GITHUB_TOKEN || null);
+  return new GitHubClient(
+    token || 
+    process.env.GITHUB_TOKEN || 
+    process.env.NEXT_PUBLIC_GITHUB_TOKEN || 
+    null
+  );
 }
