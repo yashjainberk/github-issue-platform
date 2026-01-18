@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
   const issueNumber = searchParams.get("issue_number");
 
   if (repoOwner && repoName && issueNumber) {
-    const session = getSessionByIssue(
+    const session = await getSessionByIssue(
       repoOwner,
       repoName,
       parseInt(issueNumber, 10)
@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ session });
   }
 
-  const sessions = getAllSessions();
+  const sessions = await getAllSessions();
   return NextResponse.json({ sessions });
 }
 
@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const existingSession = getSessionByIssue(repo_owner, repo_name, issue_number);
+    const existingSession = await getSessionByIssue(repo_owner, repo_name, issue_number);
     if (existingSession) {
       return NextResponse.json(
         { error: "Session already exists for this issue", session: existingSession },
@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
       fix_result: null,
     };
 
-    const session = createSession(sessionData);
+    const session = await createSession(sessionData);
     return NextResponse.json({ session }, { status: 201 });
   } catch (error) {
     return NextResponse.json(

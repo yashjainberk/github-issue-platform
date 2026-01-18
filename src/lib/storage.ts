@@ -1,97 +1,116 @@
 import { IssueScopingSession } from "@/types/devin";
-import fs from "fs";
-import path from "path";
+import { supabase } from "./supabase";
 
-const DATA_DIR = path.join(process.cwd(), "data");
-const SESSIONS_FILE = path.join(DATA_DIR, "sessions.json");
+export async function getAllSessions(): Promise<IssueScopingSession[]> {
+  const { data, error } = await supabase
+    .from('issue_scoping_sessions')
+    .select('*')
+    .order('created_at', { ascending: false });
 
-function ensureDataDir(): void {
-  if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR, { recursive: true });
-  }
-}
-
-function readSessionsFile(): IssueScopingSession[] {
-  ensureDataDir();
-  if (!fs.existsSync(SESSIONS_FILE)) {
+  if (error) {
+    console.error('Error fetching sessions:', error);
     return [];
   }
-  try {
-    const data = fs.readFileSync(SESSIONS_FILE, "utf-8");
-    return JSON.parse(data);
-  } catch {
-    return [];
+
+  return data || [];
+}
+
+export async function getSessionById(id: string): Promise<IssueScopingSession | null> {
+  const { data, error } = await supabase
+    .from('issue_scoping_sessions')
+    .select('*')
+    .eq('id', id)
+    .single();
+
+  if (error) {
+    console.error('Error fetching session:', error);
+    return null;
   }
+
+  return data;
 }
 
-function writeSessionsFile(sessions: IssueScopingSession[]): void {
-  ensureDataDir();
-  fs.writeFileSync(SESSIONS_FILE, JSON.stringify(sessions, null, 2));
-}
-
-export function getAllSessions(): IssueScopingSession[] {
-  return readSessionsFile();
-}
-
-export function getSessionById(id: string): IssueScopingSession | null {
-  const sessions = readSessionsFile();
-  return sessions.find((s) => s.id === id) || null;
-}
-
-export function getSessionByIssue(
+export async function getSessionByIssue(
   repoOwner: string,
   repoName: string,
   issueNumber: number
-): IssueScopingSession | null {
-  const sessions = readSessionsFile();
-  return (
-    sessions.find(
-      (s) =>
-        s.repo_owner === repoOwner &&
-        s.repo_name === repoName &&
-        s.issue_number === issueNumber
-    ) || null
-  );
+): Promise<IssueScopingSession | null> {
+  const { data, error } = await supabase
+    .from('issue_scoping_sessions')
+    .select('*')
+    .eq('repo_owner', repoOwner)
+    .eq('repo_name', repoName)
+    .eq('issue_number', issueNumber)
+    .single();
+
+  if (error) {
+    if (error.code === 'PGRST116') {
+      // No rows returned
+      return null;
+    }
+    console.error('Error fetching session:', error);
+    return null;
+  }
+
+  return data;
 }
 
-export function createSession(
+export async function createSession(
   session: Omit<IssueScopingSession, "id" | "created_at" | "updated_at">
-): IssueScopingSession {
-  const sessions = readSessionsFile();
+): Promise<IssueScopingSession> {
   const newSession: IssueScopingSession = {
     ...session,
     id: `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   };
-  sessions.push(newSession);
-  writeSessionsFile(sessions);
-  return newSession;
+
+  const { data, error } = await supabase
+    .from('issue_scoping_sessions')
+    .insert([newSession])
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error creating session:', error);
+    throw new Error('Failed to create session');
+  }
+
+  return data;
 }
 
-export function updateSession(
+export async function updateSession(
   id: string,
   updates: Partial<IssueScopingSession>
-): IssueScopingSession | null {
-  const sessions = readSessionsFile();
-  const index = sessions.findIndex((s) => s.id === id);
-  if (index === -1) return null;
+): Promise<IssueScopingSession | null> {
+  const { data, error } = await supabase
+    .from('issue_scoping_sessions')
+    .update({
+      ...updates,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', id)
+    .select()
+    .single();
 
-  sessions[index] = {
-    ...sessions[index],
-    ...updates,
-    updated_at: new Date().toISOString(),
-  };
-  writeSessionsFile(sessions);
-  return sessions[index];
+  if (error) {
+    console.error('Error updating session:', error);
+    return null;
+  }
+
+  return data;
 }
 
-export function deleteSession(id: string): boolean {
-  const sessions = readSessionsFile();
-  const index = sessions.findIndex((s) => s.id === id);
-  if (index === -1) return false;
+export async function deleteSession(id: string): Promise<boolean> {
+  const { error } = await supabase
+    .from('issue_scoping_sessions')
+    .delete()
+    .eq('id', id);
 
-  sessions.splice(index, 1);
-  writeSessionsFile(sessions);
+  if (error) {
+    console.error('Error deleting session:', error);
+    return false;
+  }
+
   return true;
 }

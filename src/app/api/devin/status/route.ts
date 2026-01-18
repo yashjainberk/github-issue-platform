@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const session = getSessionById(sessionId);
+    const session = await getSessionById(sessionId);
     if (!session) {
       return NextResponse.json(
         { error: "Session not found" },
@@ -98,7 +98,7 @@ ${scopingResult.potential_risks.map(r => `- ${r}`).join("\n") || "None identifie
             );
             
             // Mark as comment posted
-            updatedSession = updateSession(session.id, {
+            updatedSession = await updateSession(session.id, {
               status: "scoped",
               scoping_result: scopingResult,
               comment_posted: true,
@@ -106,21 +106,21 @@ ${scopingResult.potential_risks.map(r => `- ${r}`).join("\n") || "None identifie
           } catch (githubError) {
             console.error("Failed to post GitHub comment:", githubError);
             // Still update the session status even if comment fails
-            updatedSession = updateSession(session.id, {
+            updatedSession = await updateSession(session.id, {
               status: "scoped",
               scoping_result: scopingResult,
             }) || session;
           }
         } else {
           updatedSession =
-            updateSession(session.id, {
+            await updateSession(session.id, {
               status: isFinished ? "scoped" : "scoping",
               scoping_result: scopingResult,
             }) || session;
         }
       } else if (isFinished) {
         updatedSession =
-          updateSession(session.id, {
+          await updateSession(session.id, {
             status: "scoped",
           }) || session;
       }
@@ -136,13 +136,13 @@ ${scopingResult.potential_risks.map(r => `- ${r}`).join("\n") || "None identifie
         }
 
         updatedSession =
-          updateSession(session.id, {
+          await updateSession(session.id, {
             status: isFinished ? "fixed" : "fixing",
             fix_result: fixResult,
           }) || session;
       } else if (isFinished) {
         updatedSession =
-          updateSession(session.id, {
+          await updateSession(session.id, {
             status: "fixed",
           }) || session;
       }
@@ -153,7 +153,7 @@ ${scopingResult.potential_risks.map(r => `- ${r}`).join("\n") || "None identifie
       (devinStatus.status_enum === "expired" || devinStatus.status === "failed")
     ) {
       updatedSession =
-        updateSession(session.id, {
+        await updateSession(session.id, {
           status: "failed",
         }) || session;
     }

@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    let session = getSessionByIssue(repo_owner, repo_name, issue_number);
+    let session = await getSessionByIssue(repo_owner, repo_name, issue_number);
 
     if (session && session.status !== "pending" && session.status !== "failed") {
       return NextResponse.json(
@@ -40,13 +40,13 @@ export async function POST(request: NextRequest) {
     );
 
     if (session) {
-      session = updateSession(session.id, {
+      session = await updateSession(session.id, {
         devin_session_id: devinResponse.session_id,
         devin_session_url: devinResponse.url,
         status: "scoping",
-      });
+      }) || session;
     } else {
-      session = createSession({
+      session = await createSession({
         issue_number,
         issue_title,
         repo_owner,

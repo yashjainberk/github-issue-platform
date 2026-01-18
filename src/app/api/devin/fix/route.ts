@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const session = getSessionByIssue(repo_owner, repo_name, issue_number);
+    const session = await getSessionByIssue(repo_owner, repo_name, issue_number);
 
     if (!session) {
       return NextResponse.json(
@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
       session.scoping_result
     );
 
-    const updatedSession = updateSession(session.id, {
+    const updatedSession = await updateSession(session.id, {
       fix_session_id: devinResponse.session_id,
       fix_session_url: devinResponse.url,
       status: "fixing",

@@ -8,7 +8,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  const session = getSessionById(id);
+  const session = await getSessionById(id);
 
   if (!session) {
     return NextResponse.json({ error: "Session not found" }, { status: 404 });
@@ -25,7 +25,7 @@ export async function PATCH(
     const { id } = await params;
     const body = await request.json();
 
-    const session = updateSession(id, body);
+    const session = await updateSession(id, body);
 
     if (!session) {
       return NextResponse.json({ error: "Session not found" }, { status: 404 });
@@ -45,7 +45,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  const deleted = deleteSession(id);
+  const deleted = await deleteSession(id);
 
   if (!deleted) {
     return NextResponse.json({ error: "Session not found" }, { status: 404 });
