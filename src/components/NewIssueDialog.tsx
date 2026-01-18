@@ -13,11 +13,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { createGitHubClient } from "@/lib/github";
+import { GitHubIssue } from "@/types/github";
 
 interface NewIssueDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  onIssueCreated: () => void;
+  onIssueCreated: (issue: GitHubIssue) => void;
   owner: string;
   repo: string;
 }
@@ -43,7 +44,7 @@ export function NewIssueDialog({
 
     try {
       const client = createGitHubClient();
-      await client.createIssue(owner, repo, title, body);
+      const createdIssue = await client.createIssue(owner, repo, title, body);
       
       // Reset form
       setTitle("");
@@ -52,11 +53,8 @@ export function NewIssueDialog({
       // Close dialog first for better UX
       onClose();
       
-      // Small delay to ensure GitHub's API has the new issue indexed
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      // Refresh the issue list
-      onIssueCreated();
+      // Immediately update the UI with the created issue (optimistic update)
+      onIssueCreated(createdIssue);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to create issue");
     } finally {
