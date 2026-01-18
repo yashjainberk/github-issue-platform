@@ -74,6 +74,29 @@ export default function Dashboard() {
     fetchIssues();
   }, [fetchIssues]);
 
+  const handleIssueCreated = useCallback((newIssue: GitHubIssue) => {
+    // Optimistically add the new issue to the list if it matches current filters
+    const shouldShowIssue = 
+      filters.state === "all" || 
+      filters.state === newIssue.state;
+    
+    if (shouldShowIssue) {
+      setIssues((prevIssues) => [newIssue, ...prevIssues]);
+    }
+    
+    // Update stats optimistically
+    setStats((prevStats) => ({
+      total: prevStats.total + 1,
+      open: newIssue.state === "open" ? prevStats.open + 1 : prevStats.open,
+      closed: newIssue.state === "closed" ? prevStats.closed + 1 : prevStats.closed,
+    }));
+    
+    // Trigger background refresh to sync with server state
+    setTimeout(() => {
+      fetchIssues();
+    }, 1000);
+  }, [filters.state, fetchIssues]);
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="sticky top-0 z-30 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -177,7 +200,7 @@ export default function Dashboard() {
       <NewIssueDialog
         isOpen={isNewIssueDialogOpen}
         onClose={() => setIsNewIssueDialogOpen(false)}
-        onIssueCreated={fetchIssues}
+        onIssueCreated={handleIssueCreated}
         owner={owner}
         repo={repo}
       />
