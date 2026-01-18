@@ -11,6 +11,7 @@ import { NewIssueDialog } from "@/components/NewIssueDialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const DEFAULT_FILTERS: IssueFilters = {
   state: "open",
@@ -115,7 +116,11 @@ export default function Dashboard() {
                 <ListFilter className="h-4 w-4 text-muted-foreground" />
               </div>
               <div className="flex items-baseline gap-2">
-                <p className="text-3xl font-bold">{stats.total}</p>
+                {loading ? (
+                  <Skeleton className="h-9 w-12" />
+                ) : (
+                  <p className="text-3xl font-bold">{stats.total}</p>
+                )}
                 <Badge variant="secondary" className="font-normal">Overall</Badge>
               </div>
             </CardContent>
@@ -128,10 +133,19 @@ export default function Dashboard() {
                 <CircleDot className="h-4 w-4 text-primary" />
               </div>
               <div className="flex items-baseline gap-2">
-                <p className="text-3xl font-bold">{stats.open}</p>
-                <Badge className="bg-blue-500/10 text-blue-500 dark:text-blue-400 border-none font-normal">
-                  {Math.round((stats.open / (stats.total || 1)) * 100)}%
-                </Badge>
+                {loading ? (
+                  <>
+                    <Skeleton className="h-9 w-12" />
+                    <Skeleton className="h-5 w-10 rounded-full" />
+                  </>
+                ) : (
+                  <>
+                    <p className="text-3xl font-bold">{stats.open}</p>
+                    <Badge className="bg-blue-500/10 text-blue-500 dark:text-blue-400 border-none font-normal">
+                      {Math.round((stats.open / (stats.total || 1)) * 100)}%
+                    </Badge>
+                  </>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -143,10 +157,19 @@ export default function Dashboard() {
                 <CheckCircle2 className="h-4 w-4 text-emerald-500" />
               </div>
               <div className="flex items-baseline gap-2">
-                <p className="text-3xl font-bold">{stats.closed}</p>
-                <Badge className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-none font-normal">
-                  {Math.round((stats.closed / (stats.total || 1)) * 100)}%
-                </Badge>
+                {loading ? (
+                  <>
+                    <Skeleton className="h-9 w-12" />
+                    <Skeleton className="h-5 w-10 rounded-full" />
+                  </>
+                ) : (
+                  <>
+                    <p className="text-3xl font-bold">{stats.closed}</p>
+                    <Badge className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-none font-normal">
+                      {Math.round((stats.closed / (stats.total || 1)) * 100)}%
+                    </Badge>
+                  </>
+                )}
               </div>
             </CardContent>
           </Card>
