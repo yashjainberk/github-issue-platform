@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { RefreshCw, LayoutDashboard, CircleDot, CheckCircle2, ListFilter, Plus } from "lucide-react";
+import { LayoutDashboard, CircleDot, CheckCircle2, ListFilter, Plus } from "lucide-react";
 import { GitHubIssue, IssueFilters } from "@/types/github";
 import { createGitHubClient } from "@/lib/github";
 import { IssueList } from "@/components/IssueList";
@@ -93,16 +93,6 @@ export default function Dashboard() {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={fetchIssues}
-                disabled={loading}
-                className="h-8 gap-1.5"
-              >
-                <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} />
-                <span className="hidden sm:inline">Refresh</span>
-              </Button>
               <Button
                 size="sm"
                 className="h-8 gap-1.5"
