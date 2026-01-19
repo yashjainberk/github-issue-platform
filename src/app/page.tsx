@@ -8,6 +8,7 @@ import { IssueList } from "@/components/IssueList";
 import { IssueFiltersComponent } from "@/components/IssueFilters";
 import { IssueDetail } from "@/components/IssueDetail";
 import { NewIssueDialog } from "@/components/NewIssueDialog";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -117,6 +118,7 @@ export default function Dashboard() {
               </div>
             </div>
             <div className="flex items-center gap-2">
+              <ThemeToggle />
               <Button
                 size="sm"
                 className="h-8 gap-1.5"
