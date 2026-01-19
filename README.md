@@ -55,17 +55,3 @@ Required scopes:
 - `public_repo` - for public repositories only
 - `repo` - for private repositories
 
-## Future Phases
-
-This dashboard is the first phase of a larger GitHub Issues Integration platform:
-
-1. **Phase 1 (Current)**: GitHub Issues Dashboard - Visualize issues from any repository
-2. **Phase 2**: Devin Integration - Trigger Devin sessions to scope issues and assign confidence scores
-3. **Phase 3**: Automated Resolution - Trigger Devin sessions to complete tickets based on action plans
-
-## Tech Stack
-
-- Next.js 16 with App Router
-- TypeScript
-- Tailwind CSS
-- GitHub REST API
