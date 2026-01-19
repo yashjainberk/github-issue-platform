@@ -9,6 +9,7 @@ import {
   XCircle,
   Code,
   Loader2,
+  ExternalLink,
 } from "lucide-react";
 import { GitHubIssue } from "@/types/github";
 import { IssueScopingSession, ScopingResult } from "@/types/devin";
@@ -310,10 +311,20 @@ export function DevinActions({
         )}
 
         {isScoping && (
-          <Button disabled size="sm" variant="outline" className="gap-2">
-            <Loader2 className="w-3.5 h-3.5 animate-spin" />
-            Analyzing...
-          </Button>
+          <>
+            <Button disabled size="sm" variant="outline" className="gap-2">
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              Analyzing...
+            </Button>
+            {session?.devin_session_url && (
+              <Button asChild size="sm" variant="outline" className="gap-2">
+                <a href={session.devin_session_url} target="_blank" rel="noopener noreferrer">
+                  <ExternalLink className="w-3.5 h-3.5" />
+                  View Devin Session
+                </a>
+              </Button>
+            )}
+          </>
         )}
 
         {isScoped && (
@@ -329,10 +340,20 @@ export function DevinActions({
         )}
 
         {isFixing && (
-          <Button disabled size="sm" variant="outline" className="gap-2 text-emerald-600 border-emerald-600/20 bg-emerald-500/5">
-            <Loader2 className="w-3.5 h-3.5 animate-spin" />
-            Applying Fix...
-          </Button>
+          <>
+            <Button disabled size="sm" variant="outline" className="gap-2 text-emerald-600 border-emerald-600/20 bg-emerald-500/5">
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              Applying Fix...
+            </Button>
+            {session?.fix_session_url && (
+              <Button asChild size="sm" variant="outline" className="gap-2">
+                <a href={session.fix_session_url} target="_blank" rel="noopener noreferrer">
+                  <ExternalLink className="w-3.5 h-3.5" />
+                  View Devin Session
+                </a>
+              </Button>
+            )}
+          </>
         )}
       </div>
 
