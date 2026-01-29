@@ -110,7 +110,8 @@ export default function Dashboard() {
               </div>
               <div>
                 <h1 className="text-lg font-bold tracking-tight">
-                  GitHub Issues
+                  Devin: GitHub Issues
+
                 </h1>
                 <p className="text-xs text-muted-foreground font-medium">
                   {repo}
