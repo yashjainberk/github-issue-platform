@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "GitHub Issues Dashboard",
+  title: "Devin: GitHub Issues Dashboard",
   description: "View and manage GitHub issues from any repository",
 };
 
